@@ -87,7 +87,10 @@ def merge(diaz_segments : list, trans_segments : list) -> list[tuple[float, floa
 
 def main() :
 	if (not os.path.exists(args.file)) :
-		raise ValueError(f"ERROR : the file \"{args.file}\" doesn't exist")
+		print(f"ERROR : the file \"{args.file}\" doesn't exist")
+	if (os.path.getsize(args.file) > 26214400) :
+		print("ERROR : the maximum size of file must be 26214400")
+		raise SystemExit()
 	try :
 		print("Creating OpenAI client object...")
 		client = OpenAI(
@@ -115,8 +118,9 @@ def main() :
 		print("\nOpenAI Error : ", err)
 	else :
 		output = open(args.output, "w")
+		print()
 		for start, end, speaker, text in merge(diaz, trans) :
-			print(f"[{start:.2f}->{end:.2f}] {speaker} : {text}", file = output)
+			print(f"[{start:.2f}->{end:.2f}] Speaker {speaker} : {text}", file = output)
 		client.close()
 		output.close()
 	finally :
