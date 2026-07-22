@@ -85,24 +85,24 @@ def merge(diaz_segments : list, trans_segments : list) -> list[tuple[float, floa
 		merged.append((text.start, text.end, best_speaker, text.text))
 	return merged
 
-def clean(output, client) :
-	print("cleaning context ... ", end = "", flush = True)
-	output.close()
-	client.close()
-	print("DONE")
-
 def main() :
 	if (not os.path.exists(args.file)) :
 		raise ValueError(f"ERROR : the file \"{args.file}\" doesn't exist")
 	try :
+		print("Creating OpenAI client object...")
 		client = OpenAI(
 			api_key = args.api_key,
 			base_url = args.base_url
 		)
+		print("Creating Diarization object...")
 		diaz_obj = Diarization(client, args.file)
+		print("diarizing...")
 		diaz = diaz_obj.diarize()
+		print("Creating Transcription object...")
 		trans_obj = Transcription(client, args.file)
+		print("transcribing...")
 		trans = trans_obj.transcribe()
+		print("done, start merging results")
 	except APIConnectionError as err :
 		print("\nConnection Error : ", err)
 	except APITimeoutError as err :
@@ -116,7 +116,7 @@ def main() :
 	else :
 		output = open(args.output, "w")
 		for start, end, speaker, text in merge(diaz, trans) :
-			print(f"[{start:.2f}->{end:.2f}] {speaker} : {text}")
+			print(f"[{start:.2f}->{end:.2f}] {speaker} : {text}", file = output)
 		client.close()
 		output.close()
 	finally :
