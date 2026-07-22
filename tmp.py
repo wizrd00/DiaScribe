@@ -89,7 +89,7 @@ def main() :
 	if (not os.path.exists(args.file)) :
 		print(f"ERROR : the file \"{args.file}\" doesn't exist")
 	if (os.path.getsize(args.file) > 26214400) :
-		print("ERROR : the maximum size of file must be 26214400")
+		print("ERROR : the maximum size of file must be 25MiB")
 		raise SystemExit()
 	try :
 		print("Creating OpenAI client object...")
