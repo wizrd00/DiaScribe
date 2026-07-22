@@ -2,6 +2,7 @@
 import argparse
 import sys, os
 
+
 def manage_args() :
 	parser = argparse.ArgumentParser(prog = "agent", add_help = True)
 	parser.add_argument("--file", type = str, required = True, help = "The audio file")
@@ -14,6 +15,7 @@ def manage_args() :
 	return parser.parse_args()
 
 args = manage_args()
+
 
 import torch
 from collections.abc import Iterator
