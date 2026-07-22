@@ -30,7 +30,7 @@ class Diarization :
 
 	@client.setter
 	def client(self, value : OpenAI) -> None :
-		if (value.is_closed) :
+		if (value.is_closed()) :
 			raise Exception("ERROR : the OpenAI client closed")
 		else :
 			self._client = value
@@ -62,7 +62,7 @@ class Diarization :
 
 class Transcription(Diarization) :
 	def __init__(self, client : OpenAI, file : str) :
-		super(client, file)
+		super().__init__(client, file)
 
 	def transcribe(self) -> list :
 		self.result = self.client.audio.transcriptions.create(
@@ -83,6 +83,7 @@ def merge(diaz_segments : list, trans_segments : list) -> list[tuple[float, floa
 				best_overlap = overlap
 				best_speaker = speak.speaker
 		merged.append((text.start, text.end, best_speaker, text.text))
+	return merged
 
 def clean(output, client) :
 	print("cleaning context ... ", end = "", flush = True)
@@ -103,25 +104,22 @@ def main() :
 		trans_obj = Transcription(client, args.file)
 		trans = trans_obj.transcribe()
 	except APIConnectionError as err :
-		print("Connection Error : ", err)
+		print("\nConnection Error : ", err)
 	except APITimeoutError as err :
-		print("Timeout Error : ", err)
+		print("\nTimeout Error : ", err)
 	except RateLimitError as err :
-		print("Rate Limit Error : ", err)
+		print("\nRate Limit Error : ", err)
 	except APIStatusError as err :
-		print("Server Error : ", err)
+		print("\nServer Error : ", err)
 	except Exception as err :
-		print("OpenAI Error : ", err)
+		print("\nOpenAI Error : ", err)
 	else :
+		output = open(args.output, "w")
 		for start, end, speaker, text in merge(diaz, trans) :
 			print(f"[{start:.2f}->{end:.2f}] {speaker} : {text}")
+		client.close()
+		output.close()
 	finally :
 		raise SystemExit()
-	output = open(args.output, "w")
-	output.close()
 
-try :
-	main()
-except KeyboardInterrupt :
-	print(f"\x1b[31mKeyboard Interrupt \x1b[0m")
-	raise SystemExit()
+main()
