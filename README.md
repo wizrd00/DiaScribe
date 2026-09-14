@@ -2,6 +2,7 @@
 
 **Speaker-aware transcription from the command line.**
 
+Reason I wrote this program? FUN 😁
 DiaScribe turns a raw audio file into a clean, speaker-labeled transcript by combining OpenAI's diarization model with Whisper's transcription — reconciling both into a single, readable timeline.
 
 ![Python](https://img.shields.io/badge/python-3.9%2B-blue)
